@@ -1323,9 +1323,7 @@
     signinBtn.disabled = false;
   }
 
-  signinBtn.addEventListener("click", function () {
-    authStatus.textContent = "A abrir o login da Google...";
-    signinBtn.disabled = true;
+  function trySignIn() {
     var provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider).catch(function (err) {
       var fallback = err && (err.code === "auth/popup-blocked" || err.code === "auth/cancelled-popup-request" || err.code === "auth/operation-not-supported-in-this-environment");
@@ -1336,6 +1334,19 @@
         showAuthError("Erro no login (popup):", err);
       }
     });
+  }
+
+  signinBtn.addEventListener("click", function () {
+    authStatus.textContent = "A abrir o login da Google...";
+    signinBtn.disabled = true;
+    // Tenta persistencia local (IndexedDB/localStorage); se o browser bloquear
+    // o armazenamento (comum no Safari/iOS em certos modos), recua para
+    // sessionStorage e, no limite, para memoria (sem persistir entre recargas).
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .catch(function () { return auth.setPersistence(firebase.auth.Auth.Persistence.SESSION); })
+      .catch(function () { return auth.setPersistence(firebase.auth.Auth.Persistence.NONE); })
+      .catch(function () { /* segue mesmo assim; o erro real aparece no signInWithPopup/Redirect */ })
+      .then(trySignIn);
   });
 
   signoutBtn.addEventListener("click", function () {
