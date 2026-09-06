@@ -1317,10 +1317,25 @@
     });
   }
 
+  function showAuthError(prefix, err) {
+    console.error(prefix, err);
+    authStatus.textContent = "Erro: " + (err && err.code ? err.code : "") + " - " + (err && err.message ? err.message : err);
+    signinBtn.disabled = false;
+  }
+
   signinBtn.addEventListener("click", function () {
     authStatus.textContent = "A abrir o login da Google...";
+    signinBtn.disabled = true;
     var provider = new firebase.auth.GoogleAuthProvider();
-    auth.signInWithRedirect(provider);
+    auth.signInWithPopup(provider).catch(function (err) {
+      var fallback = err && (err.code === "auth/popup-blocked" || err.code === "auth/cancelled-popup-request" || err.code === "auth/operation-not-supported-in-this-environment");
+      if (fallback) {
+        authStatus.textContent = "A abrir login (redirecionamento)...";
+        auth.signInWithRedirect(provider).catch(function (err2) { showAuthError("Erro no login (redirect):", err2); });
+      } else {
+        showAuthError("Erro no login (popup):", err);
+      }
+    });
   });
 
   signoutBtn.addEventListener("click", function () {
@@ -1328,9 +1343,7 @@
     auth.signOut();
   });
 
-  auth.getRedirectResult().catch(function (err) {
-    authStatus.textContent = "Erro no login: " + err.message;
-  });
+  auth.getRedirectResult().catch(function (err) { showAuthError("Erro no resultado do redirect:", err); });
 
   auth.onAuthStateChanged(function (user) {
     if (user) {
