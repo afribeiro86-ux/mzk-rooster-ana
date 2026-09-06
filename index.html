@@ -78,6 +78,8 @@
     padding: 6px 2px 5px; border-left: 1px solid rgba(255,255,255,.15);
   }
   .pl-daynames div.pl-daycell:first-child { border-left: none; }
+  .pl-daynames div.pl-daycell { cursor: pointer; }
+  .pl-daynames div.pl-daycell:hover { background: rgba(255,255,255,.18); }
   .pl-daynames .pl-today { background: #CC0000; }
   .pl-logistics { font-size: 9.5px; font-weight: 500; margin-top: 2px; opacity: .95; }
   .pl-logistics .ok { color: #baffc9; }
@@ -233,6 +235,7 @@
       <button class="secondary" id="pl-next">Semana seguinte &rarr;</button>
       <button id="pl-today">Hoje</button>
       <button class="secondary" id="pl-monthly-btn">Resumo mensal</button>
+      <button class="secondary" id="pl-back-week" style="display:none">Ver semana completa</button>
     </div>
   </div>
 
@@ -274,7 +277,7 @@
   </div>
   <div class="pl-legend-hint">Clica numa cor da legenda para veres uma lista de todas as aulas/blocos dessa cor.</div>
 
-  <div class="pl-note">Clica numa aula/pr&aacute;tica para alterar a hora ou marcar como cancelada (por exemplo, se houver uma altera&ccedil;&atilde;o na rooster da Hanze). Clica num bloco de Desloca&ccedil;&atilde;o para alterar a hora ou remov&ecirc;-lo. Clica num espa&ccedil;o vazio da grelha para adicionares um bloco de Trabalho, Estudo ou Outro &mdash; depois podes arrastar esse bloco para outra hora ou outro dia, ou abri-lo e usar "Duplicar" para criar uma c&oacute;pia rapidamente. As desloca&ccedil;&otilde;es (~1h15 por trajeto) e o resumo Levar/Buscar s&atilde;o recalculados automaticamente a partir das tuas aulas reais, mas podes sempre ajustar ou remover uma desloca&ccedil;&atilde;o espec&iacute;fica.</div>
+  <div class="pl-note">Clica no nome/data de um dia (em cima da grelha) para veres so esse dia em ecra inteiro &mdash; util no telemovel; usa "Ver semana completa" para voltar. Clica numa aula/pr&aacute;tica para alterar a hora ou marcar como cancelada (por exemplo, se houver uma altera&ccedil;&atilde;o na rooster da Hanze). Clica num bloco de Desloca&ccedil;&atilde;o para alterar a hora ou remov&ecirc;-lo. Clica num espa&ccedil;o vazio da grelha para adicionares um bloco de Trabalho, Estudo ou Outro &mdash; depois podes arrastar esse bloco para outra hora ou outro dia, ou abri-lo e usar "Duplicar" para criar uma c&oacute;pia rapidamente. As desloca&ccedil;&otilde;es (~1h15 por trajeto) e o resumo Levar/Buscar s&atilde;o recalculados automaticamente a partir das tuas aulas reais, mas podes sempre ajustar ou remover uma desloca&ccedil;&atilde;o espec&iacute;fica.</div>
 
   <div class="pl-todos" id="pl-todos-section">
     <div class="pl-todos-header">
@@ -510,14 +513,8 @@
   });
 
   var todayISO = toISO(new Date());
-  var firstDataDate = null;
-  CLASS_EVENTS.forEach(function(e){
-    if (!firstDataDate || e.date < firstDataDate) firstDataDate = e.date;
-  });
-
-  var initialAnchor = new Date();
-  if (firstDataDate && todayISO < firstDataDate) initialAnchor = parseISO(firstDataDate);
-  var currentWeekStart = startOfWeek(initialAnchor);
+  var currentWeekStart = startOfWeek(new Date());
+  var singleDayIso = null; // quando definido, mostra so este dia em vez da semana toda
 
   var daynamesEl = document.getElementById("pl-daynames");
   var bodyEl = document.getElementById("pl-body");
@@ -649,7 +646,7 @@
     el.innerHTML = html;
     Array.prototype.forEach.call(el.querySelectorAll("[data-iso]"), function (node) {
       node.addEventListener("click", function () {
-        currentWeekStart = startOfWeek(parseISO(node.getAttribute("data-iso")));
+        singleDayIso = node.getAttribute("data-iso");
         renderWeek();
       });
     });
@@ -734,6 +731,14 @@
     bodyEl.innerHTML = "";
     bodyEl.style.height = COL_HEIGHT + "px";
 
+    var dayList = singleDayIso
+      ? [parseISO(singleDayIso)]
+      : [0, 1, 2, 3, 4, 5, 6].map(function (n) { return addDays(currentWeekStart, n); });
+    var colsTemplate = "52px repeat(" + dayList.length + ", 1fr)";
+    daynamesEl.style.gridTemplateColumns = colsTemplate;
+    bodyEl.style.gridTemplateColumns = colsTemplate;
+    document.getElementById("pl-back-week").style.display = singleDayIso ? "inline-block" : "none";
+
     var gutter = document.createElement("div");
     gutter.className = "pl-gutter";
     gutter.style.height = COL_HEIGHT + "px";
@@ -746,8 +751,15 @@
     }
     bodyEl.appendChild(gutter);
 
-    var weekEnd = addDays(currentWeekStart, 6);
-    weekLabelEl.textContent = fmtDateLabel(currentWeekStart) + " - " + fmtDateLabel(weekEnd) + " " + weekEnd.getFullYear();
+    if (singleDayIso) {
+      var dOne = parseISO(singleDayIso);
+      var wdOne = dOne.getDay();
+      var idxOne = wdOne === 0 ? 6 : wdOne - 1;
+      weekLabelEl.textContent = DAY_NAMES[idxOne] + ", " + fmtDateLabel(dOne) + " " + dOne.getFullYear();
+    } else {
+      var weekEnd = addDays(currentWeekStart, 6);
+      weekLabelEl.textContent = fmtDateLabel(currentWeekStart) + " - " + fmtDateLabel(weekEnd) + " " + weekEnd.getFullYear();
+    }
 
     var dnGutter = document.createElement("div");
     daynamesEl.appendChild(dnGutter);
@@ -755,15 +767,16 @@
     var weekMinutes = { aula: 0, deslocacao: 0, trabalho: 0, estudo: 0, outro: 0 };
     var weekChanges = [];
 
-    for (var i = 0; i < 7; i++) {
-      var d = addDays(currentWeekStart, i);
+    dayList.forEach(function (d) {
       var iso = toISO(d);
+      var wd = d.getDay();
+      var dayIdx = wd === 0 ? 6 : wd - 1;
       var isToday = iso === todayISO;
       var dayEvents = dayEffectiveEvents(iso);
 
       var dn = document.createElement("div");
       dn.className = "pl-daycell" + (isToday ? " pl-today" : "");
-      var logi = logisticsForDay(iso, dayEvents, i);
+      var logi = logisticsForDay(iso, dayEvents, dayIdx);
       var logiHtml = "";
       if (logi) {
         if (logi.free) {
@@ -777,7 +790,11 @@
             "<span class='" + (logi.canPick ? "ok" : "bad") + "'>" + (logi.canPick ? "Buscar OK" : "Buscar?") + "</span></div>";
         }
       }
-      dn.innerHTML = DAY_NAMES[i] + "<br>" + fmtDateLabel(d) + logiHtml;
+      dn.innerHTML = DAY_NAMES[dayIdx] + "<br>" + fmtDateLabel(d) + logiHtml;
+      dn.title = "Clica para veres so este dia";
+      dn.addEventListener("click", (function (iso4) {
+        return function () { singleDayIso = iso4; renderWeek(); };
+      })(iso));
       daynamesEl.appendChild(dn);
 
       var col = document.createElement("div");
@@ -906,7 +923,7 @@
       })(iso));
 
       bodyEl.appendChild(col);
-    }
+    });
 
     summaryEl.innerHTML =
       "<span><b>Aulas:</b> " + fmtHours(weekMinutes.aula) + "</span>" +
@@ -1132,9 +1149,26 @@
     renderWeek();
   });
 
-  document.getElementById("pl-prev").addEventListener("click", function () { currentWeekStart = addDays(currentWeekStart, -7); renderWeek(); });
-  document.getElementById("pl-next").addEventListener("click", function () { currentWeekStart = addDays(currentWeekStart, 7); renderWeek(); });
-  document.getElementById("pl-today").addEventListener("click", function () { currentWeekStart = startOfWeek(new Date()); renderWeek(); });
+  document.getElementById("pl-prev").addEventListener("click", function () {
+    if (singleDayIso) { singleDayIso = toISO(addDays(parseISO(singleDayIso), -1)); }
+    else { currentWeekStart = addDays(currentWeekStart, -7); }
+    renderWeek();
+  });
+  document.getElementById("pl-next").addEventListener("click", function () {
+    if (singleDayIso) { singleDayIso = toISO(addDays(parseISO(singleDayIso), 1)); }
+    else { currentWeekStart = addDays(currentWeekStart, 7); }
+    renderWeek();
+  });
+  document.getElementById("pl-today").addEventListener("click", function () {
+    if (singleDayIso) { singleDayIso = todayISO; }
+    else { currentWeekStart = startOfWeek(new Date()); }
+    renderWeek();
+  });
+  document.getElementById("pl-back-week").addEventListener("click", function () {
+    if (singleDayIso) currentWeekStart = startOfWeek(parseISO(singleDayIso));
+    singleDayIso = null;
+    renderWeek();
+  });
 
   // ---------- legend overview (click a legend color to list every match) ----------
   var CAT_META = {
@@ -1227,7 +1261,7 @@
           (r.presenca ? "<div class='pl-ov-sub'>" + r.presenca + "</div>" : "");
         row.addEventListener("click", (function (iso2) {
           return function () {
-            currentWeekStart = startOfWeek(parseISO(iso2));
+            singleDayIso = iso2;
             closeOverview();
             renderWeek();
           };
