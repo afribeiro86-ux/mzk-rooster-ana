@@ -215,6 +215,42 @@
   .pl-todo-del { background: none; border: none; color: #b00020; cursor: pointer; font-size: 14px; padding: 2px 6px; }
   .pl-todos-empty { font-size: 12px; color: #999; padding: 4px 0; }
 
+  .pl-todos-advtoggle { font-size: 11.5px; color: #a15c00; background: none; border: none; cursor: pointer; text-decoration: underline; padding: 2px 0; margin-bottom: 8px; display: block; }
+  .pl-todos-adv { display: none; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; background: #fafafa; border: 1px solid #eee; border-radius: 7px; padding: 8px; }
+  .pl-todos-adv.show { display: flex; }
+  .pl-todos-adv > div { flex: 1; min-width: 110px; }
+  .pl-todos-adv label { display: block; font-size: 10.5px; color: #888; margin-bottom: 2px; }
+  .pl-todos-adv select, .pl-todos-adv input[type=text], .pl-todos-adv input[type=date] { width: 100%; padding: 5px 6px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px; }
+  .pl-todos-adv .pl-adv-checkrow { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: #555; flex-basis: 100%; }
+  .pl-todos-adv .pl-adv-checkrow label { display: inline; font-size: 11.5px; color: #555; margin: 0; }
+  .pl-todos-adv .pl-adv-checkrow input[type=date] { width: auto; max-width: 140px; }
+
+  .pl-todos-filters { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .pl-tfilter { font-size: 10.5px; padding: 4px 9px; border-radius: 12px; border: 1px solid #ddd; background: #fff; color: #555; cursor: pointer; }
+  .pl-tfilter.active { background: #8C1C1C; color: #fff; border-color: #8C1C1C; }
+
+  .pl-todo-item { align-items: flex-start; flex-wrap: wrap; }
+  .pl-todo-main { display: flex; align-items: flex-start; gap: 8px; flex: 1; min-width: 200px; }
+  .pl-todo-badges { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 3px; }
+  .pl-todo-badge { font-size: 9.5px; font-weight: 600; padding: 1px 6px; border-radius: 8px; color: #fff; }
+  .pl-todo-due { font-size: 9.5px; font-weight: 700; padding: 1px 7px; border-radius: 8px; color: #fff; }
+  .pl-todo-due.soon { background: #b00020; }
+  .pl-todo-due.mid { background: #EF6C00; }
+  .pl-todo-due.far { background: #546E7A; }
+  .pl-todo-due.past { background: #212121; }
+  .pl-todo-expand { background: none; border: none; color: #999; cursor: pointer; font-size: 12px; padding: 2px 4px; }
+  .pl-todo-body { flex-basis: 100%; margin-top: 6px; padding-left: 26px; display: none; }
+  .pl-todo-body.show { display: block; }
+  .pl-todo-progress-wrap { background: #f0f0f0; border-radius: 5px; height: 6px; overflow: hidden; margin: 4px 0 2px; max-width: 220px; }
+  .pl-todo-progress { height: 100%; background: #2E8B57; }
+  .pl-subtask-row { display: flex; align-items: center; gap: 6px; font-size: 11.5px; padding: 2px 0; }
+  .pl-subtask-row.done span { text-decoration: line-through; color: #aaa; }
+  .pl-subtask-row span { flex: 1; }
+  .pl-subtask-add { display: flex; gap: 5px; margin-top: 4px; }
+  .pl-subtask-add input { flex: 1; padding: 4px 6px; border: 1px solid #ddd; border-radius: 5px; font-size: 11.5px; }
+  .pl-subtask-add button { font-size: 11px; padding: 4px 8px; border-radius: 5px; border: none; background: #eee; cursor: pointer; }
+  .pl-todo-notes { width: 100%; margin-top: 6px; padding: 6px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; font-family: inherit; resize: vertical; min-height: 40px; }
+
   #pl-repeat-wrap { display: none; }
   .pl-sync-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 11px; color: #999; margin-bottom: 8px; }
   .pl-sync-bar button { font-size: 11px; padding: 4px 8px; border-radius: 5px; border: 1px solid #ddd; background: #f7f7f7; color: #555; cursor: pointer; }
@@ -281,12 +317,48 @@
 
   <div class="pl-todos" id="pl-todos-section">
     <div class="pl-todos-header">
-      <div class="pl-todos-title">Tarefas (sem hora fixa)</div>
+      <div class="pl-todos-title">Tarefas</div>
       <div class="pl-todos-add">
-        <input type="text" id="pl-todo-input" placeholder="ex: pedir vrijstelling, marcar consulta..." maxlength="120">
+        <input type="text" id="pl-todo-input" placeholder="ex: trabalho de casa, estudar para toets..." maxlength="120">
         <button id="pl-todo-add-btn">Adicionar</button>
       </div>
     </div>
+    <button class="pl-todos-advtoggle" id="pl-todos-adv-toggle">+ mais op&ccedil;&otilde;es (tipo, prioridade, prazo, disciplina, repetir)</button>
+    <div class="pl-todos-adv" id="pl-todos-adv">
+      <div>
+        <label>Tipo</label>
+        <select id="pl-todo-type">
+          <option value="trabalho">Trabalho de casa</option>
+          <option value="apresentacao">Apresenta&ccedil;&atilde;o</option>
+          <option value="estudo">Estudo para toets</option>
+          <option value="apontamento">Apontamento</option>
+          <option value="leitura">Leitura</option>
+          <option value="outro" selected>Outro</option>
+        </select>
+      </div>
+      <div>
+        <label>Prioridade</label>
+        <select id="pl-todo-priority">
+          <option value="alta">Alta</option>
+          <option value="media" selected>M&eacute;dia</option>
+          <option value="baixa">Baixa</option>
+        </select>
+      </div>
+      <div>
+        <label>Prazo / data</label>
+        <input type="date" id="pl-todo-due">
+      </div>
+      <div>
+        <label>Disciplina (opcional)</label>
+        <input type="text" id="pl-todo-disciplina" placeholder="ex: Cariologie..." maxlength="60">
+      </div>
+      <div class="pl-adv-checkrow">
+        <input type="checkbox" id="pl-todo-repeat-check">
+        <label for="pl-todo-repeat-check">Repetir toda a semana (lembrete de revis&atilde;o) at&eacute;:</label>
+        <input type="date" id="pl-todo-repeat-until" disabled>
+      </div>
+    </div>
+    <div class="pl-todos-filters" id="pl-todos-filters"></div>
     <div id="pl-todos-list"></div>
   </div>
 </div>
@@ -464,6 +536,22 @@
   function saveTodos() {
     if (docRef) docRef.set({ todos: todos }, { merge: true }).catch(function (e) { console.error("Erro ao guardar tarefas:", e); });
   }
+  var TASK_TYPE_META = {
+    trabalho: { label: "Trabalho de casa", color: "#2E8B57" },
+    apresentacao: { label: "Apresenta\u00e7\u00e3o", color: "#3949AB" },
+    estudo: { label: "Estudo para toets", color: "#E08A00" },
+    apontamento: { label: "Apontamento", color: "#7B1FA2" },
+    leitura: { label: "Leitura", color: "#00897B" },
+    outro: { label: "Outro", color: "#546E7A" }
+  };
+  var PRIORITY_META = {
+    alta: { label: "Alta", color: "#b00020" },
+    media: { label: "M\u00e9dia", color: "#EF6C00" },
+    baixa: { label: "Baixa", color: "#546E7A" }
+  };
+  var todoFilterType = "all";
+  var todoFilterStatus = "pending";
+  var todoExpanded = {};
 
   function moveCustomBlock(oldIso, id, newIso, newStart, newEnd) {
     var list = customBlocks[oldIso] || [];
@@ -623,6 +711,11 @@
         }
       });
     });
+    todos.forEach(function (t) {
+      if (t.done || !t.due || t.due < todayIsoNow) return;
+      var tm = TASK_TYPE_META[t.type || "outro"] || TASK_TYPE_META.outro;
+      rows.push({ iso: t.due, title: tm.label + ": " + t.text, start: "00:00", todoId: t.id });
+    });
     rows.sort(function (a, b) { return (a.iso + a.start).localeCompare(b.iso + b.start); });
     rows = rows.slice(0, 8);
     if (!rows.length) {
@@ -638,7 +731,7 @@
       var cls = diffDays <= 3 ? "soon" : diffDays <= 10 ? "mid" : "far";
       var wd = d.getDay();
       var idx = wd === 0 ? 6 : wd - 1;
-      html += "<div class='pl-upcoming-item' data-iso='" + r.iso + "'>" +
+      html += "<div class='pl-upcoming-item' data-iso='" + r.iso + "'" + (r.todoId ? " data-todo-id='" + r.todoId + "'" : "") + ">" +
         "<span class='pl-upcoming-days " + cls + "'>" + daysLabel + "</span>" +
         "<span>" + DAY_NAMES[idx] + " " + fmtDateLabel(d) + " \u00b7 " + r.title + "</span></div>";
     });
@@ -646,6 +739,15 @@
     el.innerHTML = html;
     Array.prototype.forEach.call(el.querySelectorAll("[data-iso]"), function (node) {
       node.addEventListener("click", function () {
+        var todoId = node.getAttribute("data-todo-id");
+        if (todoId) {
+          todoFilterStatus = "all";
+          todoExpanded[todoId] = true;
+          renderTodos();
+          var target = document.getElementById("pl-todos-section");
+          if (target && target.scrollIntoView) target.scrollIntoView({ behavior: "smooth", block: "start" });
+          return;
+        }
         singleDayIso = node.getAttribute("data-iso");
         renderWeek();
       });
@@ -669,23 +771,127 @@
     });
   }
 
+  function computeDueBadge(due) {
+    if (!due) return null;
+    var today = new Date(); today.setHours(0, 0, 0, 0);
+    var d = parseISO(due);
+    var diffDays = Math.round((d - today) / 86400000);
+    var cls = diffDays < 0 ? "past" : diffDays <= 3 ? "soon" : diffDays <= 10 ? "mid" : "far";
+    var label = diffDays < 0 ? "atrasado " + Math.abs(diffDays) + "d" : diffDays === 0 ? "hoje" : diffDays === 1 ? "amanh\u00e3" : "em " + diffDays + "d";
+    return { cls: cls, label: label };
+  }
+
+  function todoProgress(t) {
+    if (!t.subtasks || !t.subtasks.length) return null;
+    var doneCount = t.subtasks.filter(function (s) { return s.done; }).length;
+    return Math.round(doneCount / t.subtasks.length * 100);
+  }
+
+  function renderTodoFilters() {
+    var el = document.getElementById("pl-todos-filters");
+    var statusOpts = [["pending", "Pendentes"], ["done", "Conclu\u00eddas"], ["all", "Todas"]];
+    var typeOpts = [["all", "Todos os tipos"]];
+    Object.keys(TASK_TYPE_META).forEach(function (k) { typeOpts.push([k, TASK_TYPE_META[k].label]); });
+    var html = "";
+    statusOpts.forEach(function (o) {
+      html += "<button class='pl-tfilter" + (todoFilterStatus === o[0] ? " active" : "") + "' data-fstatus='" + o[0] + "'>" + o[1] + "</button>";
+    });
+    typeOpts.forEach(function (o) {
+      html += "<button class='pl-tfilter" + (todoFilterType === o[0] ? " active" : "") + "' data-ftype='" + o[0] + "'>" + o[1] + "</button>";
+    });
+    el.innerHTML = html;
+    Array.prototype.forEach.call(el.querySelectorAll("[data-fstatus]"), function (b) {
+      b.addEventListener("click", function () { todoFilterStatus = b.getAttribute("data-fstatus"); renderTodos(); });
+    });
+    Array.prototype.forEach.call(el.querySelectorAll("[data-ftype]"), function (b) {
+      b.addEventListener("click", function () { todoFilterType = b.getAttribute("data-ftype"); renderTodos(); });
+    });
+  }
+
   function renderTodos() {
+    renderTodoFilters();
     var listEl = document.getElementById("pl-todos-list");
     listEl.innerHTML = "";
+
+    var visible = todos.filter(function (t) {
+      if (todoFilterStatus === "pending" && t.done) return false;
+      if (todoFilterStatus === "done" && !t.done) return false;
+      if (todoFilterType !== "all" && (t.type || "outro") !== todoFilterType) return false;
+      return true;
+    });
+
+    var prioOrder = { alta: 0, media: 1, baixa: 2 };
+    visible.sort(function (a, b) {
+      if (!!a.done !== !!b.done) return a.done ? 1 : -1;
+      var pa = prioOrder[a.priority] != null ? prioOrder[a.priority] : 1;
+      var pb = prioOrder[b.priority] != null ? prioOrder[b.priority] : 1;
+      if (pa !== pb) return pa - pb;
+      var da = a.due || "9999-99-99", db = b.due || "9999-99-99";
+      return da.localeCompare(db);
+    });
+
+    if (typeof renderUpcoming === "function") renderUpcoming();
+
     if (!todos.length) {
-      listEl.innerHTML = "<div class='pl-todos-empty'>Sem tarefas. Adiciona algo que precises de tratar (sem hora fixa).</div>";
+      listEl.innerHTML = "<div class='pl-todos-empty'>Sem tarefas. Adiciona um trabalho, apresenta\u00e7\u00e3o, estudo para um toets, apontamento ou outra coisa que precises de tratar.</div>";
       return;
     }
-    todos.forEach(function (t) {
+    if (!visible.length) {
+      listEl.innerHTML = "<div class='pl-todos-empty'>Sem tarefas para este filtro.</div>";
+      return;
+    }
+
+    visible.forEach(function (t) {
+      var type = t.type || "outro";
+      var priority = t.priority || "media";
+      var typeMeta = TASK_TYPE_META[type] || TASK_TYPE_META.outro;
+      var prioMeta = PRIORITY_META[priority] || PRIORITY_META.media;
+
       var row = document.createElement("div");
       row.className = "pl-todo-item" + (t.done ? " done" : "");
+
+      var main = document.createElement("div");
+      main.className = "pl-todo-main";
+
       var chk = document.createElement("input");
       chk.type = "checkbox";
       chk.checked = !!t.done;
       chk.addEventListener("change", function () { t.done = chk.checked; saveTodos(); renderTodos(); });
+
+      var textWrap = document.createElement("div");
+      textWrap.style.flex = "1";
       var span = document.createElement("span");
       span.className = "pl-todo-text";
       span.textContent = t.text;
+      textWrap.appendChild(span);
+
+      var badges = document.createElement("div");
+      badges.className = "pl-todo-badges";
+      var badgesHtml = "<span class='pl-todo-badge' style='background:" + typeMeta.color + "'>" + typeMeta.label + "</span>" +
+        "<span class='pl-todo-badge' style='background:" + prioMeta.color + "'>" + prioMeta.label + "</span>";
+      if (t.disciplina) badgesHtml += "<span class='pl-todo-badge' style='background:#999'>" + t.disciplina + "</span>";
+      var db = computeDueBadge(t.due);
+      if (db) badgesHtml += "<span class='pl-todo-due " + db.cls + "'>" + db.label + "</span>";
+      badges.innerHTML = badgesHtml;
+      textWrap.appendChild(badges);
+
+      var prog = todoProgress(t);
+      if (prog !== null) {
+        var progWrap = document.createElement("div");
+        progWrap.className = "pl-todo-progress-wrap";
+        progWrap.innerHTML = "<div class='pl-todo-progress' style='width:" + prog + "%'></div>";
+        textWrap.appendChild(progWrap);
+      }
+
+      var expandBtn = document.createElement("button");
+      expandBtn.className = "pl-todo-expand";
+      expandBtn.textContent = todoExpanded[t.id] ? "\u25b4" : "\u25be";
+      expandBtn.title = "Subtarefas e notas";
+      expandBtn.addEventListener("click", function () {
+        todoExpanded[t.id] = !todoExpanded[t.id];
+        renderTodos();
+      });
+
       var del = document.createElement("button");
       del.className = "pl-todo-del";
       del.textContent = "\u2715";
@@ -695,9 +901,74 @@
         saveTodos();
         renderTodos();
       });
-      row.appendChild(chk);
-      row.appendChild(span);
-      row.appendChild(del);
+
+      main.appendChild(chk);
+      main.appendChild(textWrap);
+      main.appendChild(expandBtn);
+      main.appendChild(del);
+      row.appendChild(main);
+
+      if (todoExpanded[t.id]) {
+        var body = document.createElement("div");
+        body.className = "pl-todo-body show";
+
+        var subtaskList = document.createElement("div");
+        (t.subtasks || []).forEach(function (s) {
+          var srow = document.createElement("div");
+          srow.className = "pl-subtask-row" + (s.done ? " done" : "");
+          var schk = document.createElement("input");
+          schk.type = "checkbox";
+          schk.checked = !!s.done;
+          schk.addEventListener("change", function () { s.done = schk.checked; saveTodos(); renderTodos(); });
+          var stext = document.createElement("span");
+          stext.textContent = s.text;
+          var sdel = document.createElement("button");
+          sdel.className = "pl-todo-del";
+          sdel.textContent = "\u2715";
+          sdel.addEventListener("click", function () {
+            t.subtasks = (t.subtasks || []).filter(function (x) { return x.id !== s.id; });
+            saveTodos();
+            renderTodos();
+          });
+          srow.appendChild(schk);
+          srow.appendChild(stext);
+          srow.appendChild(sdel);
+          subtaskList.appendChild(srow);
+        });
+        body.appendChild(subtaskList);
+
+        var subAdd = document.createElement("div");
+        subAdd.className = "pl-subtask-add";
+        var subInput = document.createElement("input");
+        subInput.type = "text";
+        subInput.placeholder = "nova subtarefa...";
+        subInput.maxLength = 80;
+        var subBtn = document.createElement("button");
+        subBtn.textContent = "+ subtarefa";
+        function addSub() {
+          var v = subInput.value.trim();
+          if (!v) return;
+          if (!t.subtasks) t.subtasks = [];
+          t.subtasks.push({ id: "s" + Date.now() + Math.random().toString(16).slice(2), text: v.slice(0, 80), done: false });
+          saveTodos();
+          renderTodos();
+        }
+        subBtn.addEventListener("click", addSub);
+        subInput.addEventListener("keydown", function (e) { if (e.key === "Enter") addSub(); });
+        subAdd.appendChild(subInput);
+        subAdd.appendChild(subBtn);
+        body.appendChild(subAdd);
+
+        var notes = document.createElement("textarea");
+        notes.className = "pl-todo-notes";
+        notes.placeholder = "apontamentos / notas...";
+        notes.value = t.notes || "";
+        notes.addEventListener("change", function () { t.notes = notes.value.slice(0, 2000); saveTodos(); });
+        body.appendChild(notes);
+
+        row.appendChild(body);
+      }
+
       listEl.appendChild(row);
     });
   }
@@ -706,9 +977,49 @@
     var input = document.getElementById("pl-todo-input");
     var text = input.value.trim();
     if (!text) return;
-    todos.push({ id: "t" + Date.now() + Math.random().toString(16).slice(2), text: text.slice(0, 120), done: false });
+    var type = document.getElementById("pl-todo-type").value;
+    var priority = document.getElementById("pl-todo-priority").value;
+    var due = document.getElementById("pl-todo-due").value;
+    var disciplina = document.getElementById("pl-todo-disciplina").value.trim().slice(0, 60);
+    var repeatOn = document.getElementById("pl-todo-repeat-check").checked;
+    var repeatUntil = document.getElementById("pl-todo-repeat-until").value;
+
+    function makeTodo(dueDate) {
+      return {
+        id: "t" + Date.now() + Math.random().toString(16).slice(2) + Math.random().toString(16).slice(2),
+        text: text.slice(0, 120),
+        done: false,
+        type: type,
+        priority: priority,
+        due: dueDate || "",
+        disciplina: disciplina,
+        subtasks: [],
+        notes: ""
+      };
+    }
+
+    if (repeatOn && repeatUntil && due) {
+      var d = parseISO(due);
+      var end = parseISO(repeatUntil);
+      var guard = 0;
+      while (d <= end && guard < 52) {
+        todos.push(makeTodo(toISO(d)));
+        d = addDays(d, 7);
+        guard++;
+      }
+    } else {
+      todos.push(makeTodo(due));
+    }
+
     saveTodos();
     input.value = "";
+    document.getElementById("pl-todo-type").value = "outro";
+    document.getElementById("pl-todo-priority").value = "media";
+    document.getElementById("pl-todo-disciplina").value = "";
+    document.getElementById("pl-todo-due").value = "";
+    document.getElementById("pl-todo-repeat-check").checked = false;
+    document.getElementById("pl-todo-repeat-until").disabled = true;
+    document.getElementById("pl-todo-repeat-until").value = "";
     renderTodos();
   }
 
@@ -1281,6 +1592,12 @@
   // ---------- lista de tarefas (to-do) ----------
   document.getElementById("pl-todo-add-btn").addEventListener("click", addTodo);
   document.getElementById("pl-todo-input").addEventListener("keydown", function (e) { if (e.key === "Enter") addTodo(); });
+  document.getElementById("pl-todos-adv-toggle").addEventListener("click", function () {
+    document.getElementById("pl-todos-adv").classList.toggle("show");
+  });
+  document.getElementById("pl-todo-repeat-check").addEventListener("change", function (e) {
+    document.getElementById("pl-todo-repeat-until").disabled = !e.target.checked;
+  });
 
   // ---------- resumo mensal ----------
   var MONTH_NAMES = ["Janeiro", "Fevereiro", "Mar\u00e7o", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
