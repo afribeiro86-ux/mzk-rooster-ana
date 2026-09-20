@@ -51,8 +51,12 @@
   .pl-block-taskdot { position: absolute; top: 2px; right: 2px; width: 7px; height: 7px; border-radius: 50%; background: #FFD700; box-shadow: 0 0 0 1px rgba(0,0,0,.25); }
 
   .pl-disc-picker { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-  .pl-disc-chip { font-size: 11.5px; padding: 6px 11px; border-radius: 14px; border: 1px solid #ddd; background: #fff; color: #555; cursor: pointer; }
-  .pl-disc-chip.active { background: #8C1C1C; color: #fff; border-color: #8C1C1C; }
+  .pl-disc-chip-group { display: inline-flex; align-items: stretch; border-radius: 14px; overflow: hidden; border: 1px solid #ddd; }
+  .pl-disc-chip-group.active { border-color: #8C1C1C; }
+  .pl-disc-chip { font-size: 11.5px; padding: 6px 10px; border: none; background: #fff; color: #555; cursor: pointer; }
+  .pl-disc-chip.active { background: #8C1C1C; color: #fff; }
+  .pl-disc-chip-del { border: none; border-left: 1px solid #eee; background: #fff; color: #b00020; cursor: pointer; font-size: 10.5px; padding: 6px 7px; }
+  .pl-disc-chip-del:hover { background: #FDEDED; }
   .pl-disc-empty { font-size: 12.5px; color: #888; }
   .pl-disc-addwrap { display: flex; gap: 6px; margin-bottom: 12px; }
   .pl-disc-addwrap input { flex: 1; padding: 6px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 12.5px; }
@@ -1876,6 +1880,16 @@
     return todos.filter(function (t) { return !t.done && t.disciplina === disc; }).length;
   }
 
+  function deleteDiscipline(d) {
+    if (!window.confirm("Remover \"" + d + "\"? As notas e links guardados para esta disciplina v\u00e3o ser apagados. (Se ainda tiveres aulas ou tarefas com este nome, a disciplina pode voltar a aparecer.)")) return;
+    var idx = manualDisciplines.indexOf(d);
+    if (idx !== -1) { manualDisciplines.splice(idx, 1); saveManualDisciplines(); }
+    if (disciplineNotes[d]) { delete disciplineNotes[d]; saveDisciplineNotes(); }
+    if (disciplineLinks[d]) { delete disciplineLinks[d]; saveDisciplineLinks(); }
+    if (selectedDiscipline === d) selectedDiscipline = null;
+    renderDisciplinePicker();
+  }
+
   function renderDisciplinePicker() {
     var el = document.getElementById("pl-disc-picker");
     var all = getAllDisciplines();
@@ -1883,13 +1897,22 @@
       el.innerHTML = "<div class='pl-disc-empty'>Ainda n\u00e3o h\u00e1 disciplinas. Adiciona uma acima, ou aparecem automaticamente das tuas aulas e tarefas.</div>";
     } else {
       el.innerHTML = all.map(function (d) {
-        return "<button class='pl-disc-chip" + (selectedDiscipline === d ? " active" : "") + "' data-disc='" + d + "'>" + d + "</button>";
+        return "<span class='pl-disc-chip-group" + (selectedDiscipline === d ? " active" : "") + "'>" +
+          "<button class='pl-disc-chip" + (selectedDiscipline === d ? " active" : "") + "' data-disc='" + d + "'>" + d + "</button>" +
+          "<button class='pl-disc-chip-del' data-disc-del='" + d + "' title='Remover disciplina'>\u2715</button>" +
+          "</span>";
       }).join("");
       Array.prototype.forEach.call(el.querySelectorAll("[data-disc]"), function (b) {
         b.addEventListener("click", function () {
           selectedDiscipline = b.getAttribute("data-disc");
           renderDisciplinePicker();
           renderDisciplineContent();
+        });
+      });
+      Array.prototype.forEach.call(el.querySelectorAll("[data-disc-del]"), function (b) {
+        b.addEventListener("click", function (ev) {
+          ev.stopPropagation();
+          deleteDiscipline(b.getAttribute("data-disc-del"));
         });
       });
     }
