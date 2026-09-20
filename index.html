@@ -38,6 +38,18 @@
   .pl-nav button:hover { opacity: .88; }
   .pl-weeklabel { font-weight: 600; font-size: 14px; min-width: 210px; text-align: center; }
 
+  .pl-tabbar { display: flex; gap: 6px; margin-bottom: 10px; }
+  .pl-tab { flex: 1; padding: 9px 4px; border-radius: 8px; border: 1px solid #ddd; background: #f7f7f7; color: #555; font-weight: 700; font-size: 13px; cursor: pointer; }
+  .pl-tab.active { background: #CC0000; color: #fff; border-color: #CC0000; }
+  .pl-tabpage { display: none; }
+  .pl-tabpage.active { display: block; }
+
+  .pl-help-toggle { font-size: 11.5px; color: #a15c00; background: none; border: none; cursor: pointer; text-decoration: underline; padding: 4px 0; margin-bottom: 8px; display: block; }
+  .pl-help-panel { display: none; }
+  .pl-help-panel.show { display: block; }
+
+  .pl-block-taskdot { position: absolute; top: 2px; right: 2px; width: 7px; height: 7px; border-radius: 50%; background: #FFD700; box-shadow: 0 0 0 1px rgba(0,0,0,.25); }
+
   .pl-legend {
     display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; margin-bottom: 10px;
     background: #fafafa; border: 1px solid #eee; border-radius: 8px; padding: 8px 12px;
@@ -270,96 +282,115 @@
       <div class="pl-weeklabel" id="pl-weeklabel">-</div>
       <button class="secondary" id="pl-next">Semana seguinte &rarr;</button>
       <button id="pl-today">Hoje</button>
-      <button class="secondary" id="pl-monthly-btn">Resumo mensal</button>
       <button class="secondary" id="pl-back-week" style="display:none">Ver semana completa</button>
     </div>
   </div>
 
-  <div class="pl-gridwrap">
-    <div class="pl-daynames" id="pl-daynames"></div>
-    <div class="pl-scroll">
-      <div class="pl-body" id="pl-body"></div>
+  <div class="pl-tabbar" id="pl-tabbar">
+    <button class="pl-tab active" data-tab="calendario">Calend&aacute;rio</button>
+    <button class="pl-tab" data-tab="tarefas">Tarefas</button>
+    <button class="pl-tab" data-tab="resumo">Resumo</button>
+  </div>
+
+  <div class="pl-tabpage active" id="pl-tabpage-calendario">
+    <div class="pl-gridwrap">
+      <div class="pl-daynames" id="pl-daynames"></div>
+      <div class="pl-scroll">
+        <div class="pl-body" id="pl-body"></div>
+      </div>
+    </div>
+
+    <div class="pl-summary" id="pl-summary"></div>
+    <div class="pl-changes" id="pl-changes">
+      <div class="pl-changes-title">Aulas alteradas ou canceladas nesta semana</div>
+      <div id="pl-changes-list"></div>
+    </div>
+
+    <button class="pl-help-toggle" id="pl-help-toggle">? Legenda de cores e instru&ccedil;&otilde;es</button>
+    <div class="pl-help-panel" id="pl-help-panel">
+      <div class="pl-legend">
+        <div class="pl-legend-item pl-legend-clickable" data-cat="aula"><span class="pl-swatch" style="background:#CC0000"></span> Aula</div>
+        <div class="pl-legend-item pl-legend-clickable" data-cat="pratica"><span class="pl-swatch" style="background:#EF6C00"></span> Pr&aacute;tica / Skillslab</div>
+        <div class="pl-legend-item pl-legend-clickable" data-cat="seminario"><span class="pl-swatch" style="background:#7B1FA2"></span> Semin&aacute;rio (werkcollege)</div>
+        <div class="pl-legend-item pl-legend-clickable" data-cat="grupo"><span class="pl-swatch" style="background:#D81B60"></span> Reuni&atilde;o de grupo / Community of Learning</div>
+        <div class="pl-legend-item pl-legend-clickable" data-cat="apresentacao"><span class="pl-swatch" style="background:#3949AB"></span> Apresenta&ccedil;&atilde;o</div>
+        <div class="pl-legend-item pl-legend-clickable" data-cat="simposio"><span class="pl-swatch" style="background:#8D6E00"></span> Simp&oacute;sio</div>
+        <div class="pl-legend-item pl-legend-clickable" data-cat="evento"><span class="pl-swatch" style="background:#00897B"></span> Evento</div>
+        <div class="pl-legend-item pl-legend-clickable" data-cat="qa"><span class="pl-swatch" style="background:#5D4037"></span> Perguntas e respostas</div>
+        <div class="pl-legend-item pl-legend-clickable" data-cat="toets"><span class="pl-swatch" style="background:#AD1457"></span> Toets / avalia&ccedil;&atilde;o (Pocketsonde, Sonde, inzage)</div>
+        <div class="pl-legend-item pl-legend-clickable" data-cat="prazo"><span class="pl-swatch" style="background:#212121"></span> Prazo de entrega (deadline)</div>
+        <div class="pl-legend-item pl-legend-clickable" data-cat="outrotipo"><span class="pl-swatch" style="background:#546E7A"></span> Outro / sem tipo</div>
+        <div class="pl-legend-item pl-legend-clickable" data-cat="studieweek"><span class="pl-swatch" style="background:#9E9E9E"></span> Semana de estudo (livre, sem desloca&ccedil;&atilde;o)</div>
+        <div class="pl-legend-item pl-legend-clickable" data-cat="deslocacao"><span class="pl-swatch" style="background:#5B9BD5"></span> Desloca&ccedil;&atilde;o (~1h15, clica para editar ou remover)</div>
+        <div class="pl-legend-item pl-legend-clickable" data-cat="trabalho"><span class="pl-swatch" style="background:#2E8B57"></span> Trabalho</div>
+        <div class="pl-legend-item pl-legend-clickable" data-cat="estudo"><span class="pl-swatch" style="background:#E08A00"></span> Estudo (arrasta um bloco de Trabalho/Estudo para mudar de hora ou dia)</div>
+        <div class="pl-legend-item pl-legend-clickable" data-cat="outro"><span class="pl-swatch" style="background:#8E5FC2"></span> Outro (bloco pessoal)</div>
+        <div class="pl-legend-item">Linha "Levar/Buscar" no cabe&ccedil;alho: se consegues levar (08:20) e ir buscar o teu filho, tendo em conta a desloca&ccedil;&atilde;o</div>
+        <div class="pl-legend-item"><span class="pl-swatch" style="background:#FFD700;border-radius:50%"></span> Pontinho amarelo numa aula: h&aacute; tarefas por fazer ligadas a essa aula</div>
+      </div>
+      <div class="pl-legend-hint">Clica numa cor da legenda para veres uma lista de todas as aulas/blocos dessa cor.</div>
+      <div class="pl-note">Clica no nome/data de um dia (em cima da grelha) para veres so esse dia em ecra inteiro &mdash; util no telemovel; usa "Ver semana completa" para voltar. Clica numa aula/pr&aacute;tica para alterar a hora, marcar como cancelada, ou adicionar uma tarefa ligada a essa aula. Clica num bloco de Desloca&ccedil;&atilde;o para alterar a hora ou remov&ecirc;-lo. Clica num espa&ccedil;o vazio da grelha para adicionares um bloco de Trabalho, Estudo ou Outro &mdash; depois podes arrastar esse bloco para outra hora ou outro dia, ou abri-lo e usar "Duplicar" para criar uma c&oacute;pia rapidamente. As desloca&ccedil;&otilde;es (~1h15 por trajeto) e o resumo Levar/Buscar s&atilde;o recalculados automaticamente a partir das tuas aulas reais, mas podes sempre ajustar ou remover uma desloca&ccedil;&atilde;o espec&iacute;fica.</div>
     </div>
   </div>
 
-  <div class="pl-summary" id="pl-summary"></div>
-  <div class="pl-changes" id="pl-changes">
-    <div class="pl-changes-title">Aulas alteradas ou canceladas nesta semana</div>
-    <div id="pl-changes-list"></div>
+  <div class="pl-tabpage" id="pl-tabpage-tarefas">
+    <div class="pl-todos" id="pl-todos-section">
+      <div class="pl-todos-header">
+        <div class="pl-todos-title">Tarefas</div>
+        <div class="pl-todos-add">
+          <input type="text" id="pl-todo-input" placeholder="ex: trabalho de casa, estudar para toets..." maxlength="120">
+          <button id="pl-todo-add-btn">Adicionar</button>
+        </div>
+      </div>
+      <button class="pl-todos-advtoggle" id="pl-todos-adv-toggle">+ mais op&ccedil;&otilde;es (tipo, prioridade, prazo, disciplina, repetir)</button>
+      <div class="pl-todos-adv" id="pl-todos-adv">
+        <div>
+          <label>Tipo</label>
+          <select id="pl-todo-type">
+            <option value="trabalho">Trabalho de casa</option>
+            <option value="apresentacao">Apresenta&ccedil;&atilde;o</option>
+            <option value="estudo">Estudo para toets</option>
+            <option value="apontamento">Apontamento</option>
+            <option value="leitura">Leitura</option>
+            <option value="outro" selected>Outro</option>
+          </select>
+        </div>
+        <div>
+          <label>Prioridade</label>
+          <select id="pl-todo-priority">
+            <option value="alta">Alta</option>
+            <option value="media" selected>M&eacute;dia</option>
+            <option value="baixa">Baixa</option>
+          </select>
+        </div>
+        <div>
+          <label>Prazo / data</label>
+          <input type="date" id="pl-todo-due">
+        </div>
+        <div>
+          <label>Disciplina (opcional)</label>
+          <input type="text" id="pl-todo-disciplina" placeholder="ex: Cariologie..." maxlength="60">
+        </div>
+        <div class="pl-adv-checkrow">
+          <input type="checkbox" id="pl-todo-repeat-check">
+          <label for="pl-todo-repeat-check">Repetir toda a semana (lembrete de revis&atilde;o) at&eacute;:</label>
+          <input type="date" id="pl-todo-repeat-until" disabled>
+        </div>
+      </div>
+      <input type="hidden" id="pl-todo-linked-event" value="">
+      <div class="pl-todos-filters" id="pl-todos-filters"></div>
+      <div class="pl-todos-filters" id="pl-todos-filters-disc"></div>
+      <div id="pl-todos-list"></div>
+    </div>
   </div>
 
-  <div class="pl-upcoming" id="pl-upcoming"></div>
-
-  <div class="pl-goal" id="pl-goal"></div>
-
-  <div class="pl-legend">
-    <div class="pl-legend-item pl-legend-clickable" data-cat="aula"><span class="pl-swatch" style="background:#CC0000"></span> Aula</div>
-    <div class="pl-legend-item pl-legend-clickable" data-cat="pratica"><span class="pl-swatch" style="background:#EF6C00"></span> Pr&aacute;tica / Skillslab</div>
-    <div class="pl-legend-item pl-legend-clickable" data-cat="seminario"><span class="pl-swatch" style="background:#7B1FA2"></span> Semin&aacute;rio (werkcollege)</div>
-    <div class="pl-legend-item pl-legend-clickable" data-cat="grupo"><span class="pl-swatch" style="background:#D81B60"></span> Reuni&atilde;o de grupo / Community of Learning</div>
-    <div class="pl-legend-item pl-legend-clickable" data-cat="apresentacao"><span class="pl-swatch" style="background:#3949AB"></span> Apresenta&ccedil;&atilde;o</div>
-    <div class="pl-legend-item pl-legend-clickable" data-cat="simposio"><span class="pl-swatch" style="background:#8D6E00"></span> Simp&oacute;sio</div>
-    <div class="pl-legend-item pl-legend-clickable" data-cat="evento"><span class="pl-swatch" style="background:#00897B"></span> Evento</div>
-    <div class="pl-legend-item pl-legend-clickable" data-cat="qa"><span class="pl-swatch" style="background:#5D4037"></span> Perguntas e respostas</div>
-    <div class="pl-legend-item pl-legend-clickable" data-cat="toets"><span class="pl-swatch" style="background:#AD1457"></span> Toets / avalia&ccedil;&atilde;o (Pocketsonde, Sonde, inzage)</div>
-    <div class="pl-legend-item pl-legend-clickable" data-cat="prazo"><span class="pl-swatch" style="background:#212121"></span> Prazo de entrega (deadline)</div>
-    <div class="pl-legend-item pl-legend-clickable" data-cat="outrotipo"><span class="pl-swatch" style="background:#546E7A"></span> Outro / sem tipo</div>
-    <div class="pl-legend-item pl-legend-clickable" data-cat="studieweek"><span class="pl-swatch" style="background:#9E9E9E"></span> Semana de estudo (livre, sem desloca&ccedil;&atilde;o)</div>
-    <div class="pl-legend-item pl-legend-clickable" data-cat="deslocacao"><span class="pl-swatch" style="background:#5B9BD5"></span> Desloca&ccedil;&atilde;o (~1h15, clica para editar ou remover)</div>
-    <div class="pl-legend-item pl-legend-clickable" data-cat="trabalho"><span class="pl-swatch" style="background:#2E8B57"></span> Trabalho</div>
-    <div class="pl-legend-item pl-legend-clickable" data-cat="estudo"><span class="pl-swatch" style="background:#E08A00"></span> Estudo (arrasta um bloco de Trabalho/Estudo para mudar de hora ou dia)</div>
-    <div class="pl-legend-item pl-legend-clickable" data-cat="outro"><span class="pl-swatch" style="background:#8E5FC2"></span> Outro (bloco pessoal)</div>
-    <div class="pl-legend-item">Linha "Levar/Buscar" no cabe&ccedil;alho: se consegues levar (08:20) e ir buscar o teu filho, tendo em conta a desloca&ccedil;&atilde;o</div>
-  </div>
-  <div class="pl-legend-hint">Clica numa cor da legenda para veres uma lista de todas as aulas/blocos dessa cor.</div>
-
-  <div class="pl-note">Clica no nome/data de um dia (em cima da grelha) para veres so esse dia em ecra inteiro &mdash; util no telemovel; usa "Ver semana completa" para voltar. Clica numa aula/pr&aacute;tica para alterar a hora ou marcar como cancelada (por exemplo, se houver uma altera&ccedil;&atilde;o na rooster da Hanze). Clica num bloco de Desloca&ccedil;&atilde;o para alterar a hora ou remov&ecirc;-lo. Clica num espa&ccedil;o vazio da grelha para adicionares um bloco de Trabalho, Estudo ou Outro &mdash; depois podes arrastar esse bloco para outra hora ou outro dia, ou abri-lo e usar "Duplicar" para criar uma c&oacute;pia rapidamente. As desloca&ccedil;&otilde;es (~1h15 por trajeto) e o resumo Levar/Buscar s&atilde;o recalculados automaticamente a partir das tuas aulas reais, mas podes sempre ajustar ou remover uma desloca&ccedil;&atilde;o espec&iacute;fica.</div>
-
-  <div class="pl-todos" id="pl-todos-section">
-    <div class="pl-todos-header">
-      <div class="pl-todos-title">Tarefas</div>
-      <div class="pl-todos-add">
-        <input type="text" id="pl-todo-input" placeholder="ex: trabalho de casa, estudar para toets..." maxlength="120">
-        <button id="pl-todo-add-btn">Adicionar</button>
-      </div>
+  <div class="pl-tabpage" id="pl-tabpage-resumo">
+    <div class="pl-upcoming" id="pl-upcoming"></div>
+    <div class="pl-goal" id="pl-goal"></div>
+    <div class="pl-todos" id="pl-monthly-inline-wrap">
+      <div class="pl-todos-header"><div class="pl-todos-title">Resumo mensal</div></div>
+      <div id="pl-monthly-inline"></div>
     </div>
-    <button class="pl-todos-advtoggle" id="pl-todos-adv-toggle">+ mais op&ccedil;&otilde;es (tipo, prioridade, prazo, disciplina, repetir)</button>
-    <div class="pl-todos-adv" id="pl-todos-adv">
-      <div>
-        <label>Tipo</label>
-        <select id="pl-todo-type">
-          <option value="trabalho">Trabalho de casa</option>
-          <option value="apresentacao">Apresenta&ccedil;&atilde;o</option>
-          <option value="estudo">Estudo para toets</option>
-          <option value="apontamento">Apontamento</option>
-          <option value="leitura">Leitura</option>
-          <option value="outro" selected>Outro</option>
-        </select>
-      </div>
-      <div>
-        <label>Prioridade</label>
-        <select id="pl-todo-priority">
-          <option value="alta">Alta</option>
-          <option value="media" selected>M&eacute;dia</option>
-          <option value="baixa">Baixa</option>
-        </select>
-      </div>
-      <div>
-        <label>Prazo / data</label>
-        <input type="date" id="pl-todo-due">
-      </div>
-      <div>
-        <label>Disciplina (opcional)</label>
-        <input type="text" id="pl-todo-disciplina" placeholder="ex: Cariologie..." maxlength="60">
-      </div>
-      <div class="pl-adv-checkrow">
-        <input type="checkbox" id="pl-todo-repeat-check">
-        <label for="pl-todo-repeat-check">Repetir toda a semana (lembrete de revis&atilde;o) at&eacute;:</label>
-        <input type="date" id="pl-todo-repeat-until" disabled>
-      </div>
-    </div>
-    <div class="pl-todos-filters" id="pl-todos-filters"></div>
-    <div id="pl-todos-list"></div>
   </div>
 </div>
 
@@ -397,6 +428,7 @@
     </div>
     <div class="pl-modal-actions">
       <button class="pl-btn-cancel" id="pl-f-cancel">Fechar</button>
+      <button class="pl-btn-duplicate" id="pl-f-addtask" style="display:none">+ Tarefa</button>
       <button class="pl-btn-restore" id="pl-f-restore" style="display:none">Repor original</button>
       <button class="pl-btn-delete" id="pl-f-delete" style="display:none">Remover</button>
       <button class="pl-btn-duplicate" id="pl-f-duplicate" style="display:none">Duplicar</button>
@@ -419,16 +451,6 @@
   </div>
 </div>
 
-<div class="pl-modal-overlay" id="pl-monthly-overlay">
-  <div class="pl-modal pl-overview-modal">
-    <h3 style="margin:0 0 4px 0">Resumo mensal de horas</h3>
-    <div class="pl-overview-count">Total de aulas, desloca&ccedil;&atilde;o, trabalho, estudo e outro, por m&ecirc;s.</div>
-    <div class="pl-overview-list" id="pl-monthly-list"></div>
-    <div class="pl-modal-actions">
-      <button class="pl-btn-cancel" id="pl-monthly-close">Fechar</button>
-    </div>
-  </div>
-</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
@@ -551,7 +573,14 @@
   };
   var todoFilterType = "all";
   var todoFilterStatus = "pending";
+  var todoFilterDisc = "all";
   var todoExpanded = {};
+  function hasPendingTaskForEvent(eventId) {
+    for (var i = 0; i < todos.length; i++) {
+      if (!todos[i].done && todos[i].linkedEventId === eventId) return true;
+    }
+    return false;
+  }
 
   function moveCustomBlock(oldIso, id, newIso, newStart, newEnd) {
     var list = customBlocks[oldIso] || [];
@@ -806,6 +835,24 @@
     Array.prototype.forEach.call(el.querySelectorAll("[data-ftype]"), function (b) {
       b.addEventListener("click", function () { todoFilterType = b.getAttribute("data-ftype"); renderTodos(); });
     });
+
+    var discEl = document.getElementById("pl-todos-filters-disc");
+    var discSet = {};
+    todos.forEach(function (t) { if (t.disciplina) discSet[t.disciplina] = true; });
+    var discList = Object.keys(discSet).sort();
+    if (!discList.length) {
+      discEl.innerHTML = "";
+      if (todoFilterDisc !== "all") todoFilterDisc = "all";
+    } else {
+      var discHtml = "<button class='pl-tfilter" + (todoFilterDisc === "all" ? " active" : "") + "' data-fdisc='all'>Todas as disciplinas</button>";
+      discList.forEach(function (d) {
+        discHtml += "<button class='pl-tfilter" + (todoFilterDisc === d ? " active" : "") + "' data-fdisc='" + d + "'>" + d + "</button>";
+      });
+      discEl.innerHTML = discHtml;
+      Array.prototype.forEach.call(discEl.querySelectorAll("[data-fdisc]"), function (b) {
+        b.addEventListener("click", function () { todoFilterDisc = b.getAttribute("data-fdisc"); renderTodos(); });
+      });
+    }
   }
 
   function renderTodos() {
@@ -817,6 +864,7 @@
       if (todoFilterStatus === "pending" && t.done) return false;
       if (todoFilterStatus === "done" && !t.done) return false;
       if (todoFilterType !== "all" && (t.type || "outro") !== todoFilterType) return false;
+      if (todoFilterDisc !== "all" && (t.disciplina || "") !== todoFilterDisc) return false;
       return true;
     });
 
@@ -856,7 +904,7 @@
       var chk = document.createElement("input");
       chk.type = "checkbox";
       chk.checked = !!t.done;
-      chk.addEventListener("change", function () { t.done = chk.checked; saveTodos(); renderTodos(); });
+      chk.addEventListener("change", function () { t.done = chk.checked; saveTodos(); renderTodos(); if (t.linkedEventId) renderWeek(); });
 
       var textWrap = document.createElement("div");
       textWrap.style.flex = "1";
@@ -900,6 +948,7 @@
         todos = todos.filter(function (x) { return x.id !== t.id; });
         saveTodos();
         renderTodos();
+        if (t.linkedEventId) renderWeek();
       });
 
       main.appendChild(chk);
@@ -983,6 +1032,7 @@
     var disciplina = document.getElementById("pl-todo-disciplina").value.trim().slice(0, 60);
     var repeatOn = document.getElementById("pl-todo-repeat-check").checked;
     var repeatUntil = document.getElementById("pl-todo-repeat-until").value;
+    var linkedEventId = document.getElementById("pl-todo-linked-event").value || null;
 
     function makeTodo(dueDate) {
       return {
@@ -993,6 +1043,7 @@
         priority: priority,
         due: dueDate || "",
         disciplina: disciplina,
+        linkedEventId: linkedEventId,
         subtasks: [],
         notes: ""
       };
@@ -1020,7 +1071,9 @@
     document.getElementById("pl-todo-repeat-check").checked = false;
     document.getElementById("pl-todo-repeat-until").disabled = true;
     document.getElementById("pl-todo-repeat-until").value = "";
+    document.getElementById("pl-todo-linked-event").value = "";
     renderTodos();
+    if (linkedEventId) renderWeek();
   }
 
   function renderBlock(container, startMin, endMin, cls, html, onClick, extraClass, tooltip) {
@@ -1124,7 +1177,8 @@
         var sMin = timeToMin(ev.start), eMin = timeToMin(ev.end);
         weekMinutes.aula += (eMin - sMin);
         var badge = ev.presencaLabel ? "<span class='pl-badge'>" + ev.presencaLabel + "</span>" : "";
-        var html = "<b>" + ev.title + (ev._edited ? " (alterado)" : "") + "</b>" +
+        var taskDot = hasPendingTaskForEvent(ev.id) ? "<span class='pl-block-taskdot' title='H\u00e1 tarefas por fazer'></span>" : "";
+        var html = taskDot + "<b>" + ev.title + (ev._edited ? " (alterado)" : "") + "</b>" +
           (ev.local ? "<span class='pl-sub'>" + ev.local + "</span>" : "") +
           (ev.curso ? "<span class='pl-sub2'>" + ev.curso + "</span>" : "") +
           "<span class='pl-sub2'>" + [ev.grupo, ev.tipo].filter(Boolean).join(" - ") + "</span>" +
@@ -1282,6 +1336,7 @@
   var btnDelete = document.getElementById("pl-f-delete");
   var btnRestore = document.getElementById("pl-f-restore");
   var btnDuplicate = document.getElementById("pl-f-duplicate");
+  var btnAddTask = document.getElementById("pl-f-addtask");
   var noteWrap = document.getElementById("pl-note-wrap");
   var repeatWrap = document.getElementById("pl-repeat-wrap");
   var fRepeat = document.getElementById("pl-f-repeat");
@@ -1313,6 +1368,7 @@
       repeatWrap.style.display = "block";
     }
     btnRestore.style.display = "none";
+    btnAddTask.style.display = "none";
     modalOverlay.classList.add("open");
   }
 
@@ -1330,6 +1386,7 @@
     btnDelete.style.display = "block";
     btnDuplicate.style.display = "none";
     btnRestore.style.display = commuteOverrides[block._key] ? "block" : "none";
+    btnAddTask.style.display = "none";
     modalOverlay.classList.add("open");
   }
 
@@ -1352,6 +1409,21 @@
     btnDelete.style.display = "block";
     btnDuplicate.style.display = "none";
     btnRestore.style.display = classOverrides[ev.id] ? "block" : "none";
+    btnAddTask.style.display = "block";
+    btnAddTask.onclick = function () {
+      var typeByCat = { toets: "estudo", prazo: "trabalho", apresentacao: "apresentacao" };
+      var prefType = typeByCat[ev.cat] || "outro";
+      closeModal();
+      switchTab("tarefas");
+      document.getElementById("pl-todos-adv").classList.add("show");
+      document.getElementById("pl-todo-input").value = ev.title;
+      document.getElementById("pl-todo-type").value = prefType;
+      document.getElementById("pl-todo-due").value = ev.date;
+      document.getElementById("pl-todo-disciplina").value = ev.curso || "";
+      document.getElementById("pl-todo-linked-event").value = ev.id;
+      var inputEl = document.getElementById("pl-todo-input");
+      if (inputEl.focus) inputEl.focus();
+    };
     modalOverlay.classList.add("open");
   }
 
@@ -1634,12 +1706,11 @@
     return months;
   }
 
-  var monthlyOverlay = document.getElementById("pl-monthly-overlay");
-
-  function openMonthly() {
+  function renderMonthlyInline() {
     var months = computeMonthlyStats();
     var keys = Object.keys(months).sort();
-    var listEl = document.getElementById("pl-monthly-list");
+    var listEl = document.getElementById("pl-monthly-inline");
+    if (!listEl) return;
     listEl.innerHTML = "";
     if (!keys.length) {
       listEl.innerHTML = "<div class='pl-overview-empty'>Sem dados.</div>";
@@ -1658,12 +1729,28 @@
         listEl.appendChild(row);
       });
     }
-    monthlyOverlay.classList.add("open");
   }
 
-  document.getElementById("pl-monthly-btn").addEventListener("click", openMonthly);
-  document.getElementById("pl-monthly-close").addEventListener("click", function () { monthlyOverlay.classList.remove("open"); });
-  monthlyOverlay.addEventListener("click", function (e) { if (e.target === monthlyOverlay) monthlyOverlay.classList.remove("open"); });
+  // ---------- abas (Calendario / Tarefas / Resumo) ----------
+  function switchTab(name) {
+    Array.prototype.forEach.call(document.querySelectorAll(".pl-tab"), function (b) {
+      b.classList.toggle("active", b.getAttribute("data-tab") === name);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".pl-tabpage"), function (p) {
+      p.classList.toggle("active", p.id === "pl-tabpage-" + name);
+    });
+    if (name === "resumo") renderMonthlyInline();
+  }
+  Array.prototype.forEach.call(document.querySelectorAll(".pl-tab"), function (b) {
+    b.addEventListener("click", function () { switchTab(b.getAttribute("data-tab")); });
+  });
+
+  var helpToggleBtn = document.getElementById("pl-help-toggle");
+  if (helpToggleBtn) {
+    helpToggleBtn.addEventListener("click", function () {
+      document.getElementById("pl-help-panel").classList.toggle("show");
+    });
+  }
 
   // ---------- sincronizacao (Firestore, sem login) ----------
   var syncStatusEl = document.getElementById("pl-sync-status");
