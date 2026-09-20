@@ -38,8 +38,8 @@
   .pl-nav button:hover { opacity: .88; }
   .pl-weeklabel { font-weight: 600; font-size: 14px; min-width: 210px; text-align: center; }
 
-  .pl-tabbar { display: flex; gap: 6px; margin-bottom: 10px; }
-  .pl-tab { flex: 1; padding: 9px 4px; border-radius: 8px; border: 1px solid #ddd; background: #f7f7f7; color: #555; font-weight: 700; font-size: 13px; cursor: pointer; }
+  .pl-tabbar { display: flex; gap: 5px; margin-bottom: 10px; }
+  .pl-tab { flex: 1; padding: 9px 2px; border-radius: 8px; border: 1px solid #ddd; background: #f7f7f7; color: #555; font-weight: 700; font-size: 11.5px; cursor: pointer; }
   .pl-tab.active { background: #CC0000; color: #fff; border-color: #CC0000; }
   .pl-tabpage { display: none; }
   .pl-tabpage.active { display: block; }
@@ -49,6 +49,43 @@
   .pl-help-panel.show { display: block; }
 
   .pl-block-taskdot { position: absolute; top: 2px; right: 2px; width: 7px; height: 7px; border-radius: 50%; background: #FFD700; box-shadow: 0 0 0 1px rgba(0,0,0,.25); }
+
+  .pl-disc-picker { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .pl-disc-chip { font-size: 11.5px; padding: 6px 11px; border-radius: 14px; border: 1px solid #ddd; background: #fff; color: #555; cursor: pointer; }
+  .pl-disc-chip.active { background: #8C1C1C; color: #fff; border-color: #8C1C1C; }
+  .pl-disc-empty { font-size: 12.5px; color: #888; }
+  .pl-disc-addwrap { display: flex; gap: 6px; margin-bottom: 12px; }
+  .pl-disc-addwrap input { flex: 1; padding: 6px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 12.5px; }
+  .pl-disc-addwrap button { background: #CC0000; color: #fff; border: none; border-radius: 6px; padding: 6px 12px; font-size: 12.5px; cursor: pointer; font-weight: 600; }
+
+  .pl-disc-dash { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .pl-disc-card { flex: 1; min-width: 100px; background: #FDEDED; border: 1px solid #f6cccc; border-radius: 8px; padding: 8px 10px; }
+  .pl-disc-card .n { font-size: 16px; font-weight: 700; color: #8C1C1C; }
+  .pl-disc-card .l { font-size: 10.5px; color: #777; margin-top: 2px; }
+  .pl-disc-card.clickable { cursor: pointer; }
+
+  .pl-disc-section-title { font-weight: 700; color: #8C1C1C; font-size: 13px; margin: 14px 0 6px; }
+  .pl-disc-notes { width: 100%; min-height: 120px; padding: 8px 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; font-family: inherit; resize: vertical; }
+  .pl-disc-notes-status { font-size: 10.5px; color: #999; margin-top: 4px; }
+
+  .pl-disc-links { margin-top: 4px; }
+  .pl-disc-link-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-top: 1px solid #f2f2f2; font-size: 12.5px; }
+  .pl-disc-link-row:first-child { border-top: none; }
+  .pl-disc-link-row a { flex: 1; color: #274690; text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pl-disc-link-add { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .pl-disc-link-add input { flex: 1; min-width: 90px; padding: 6px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 12.5px; }
+  .pl-disc-link-add button { background: #eafaf1; color: #1b7a43; border: none; border-radius: 6px; padding: 6px 10px; font-size: 12px; cursor: pointer; font-weight: 600; }
+
+  .pl-timer { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; background: #FFF8E8; border: 1px solid #ffe4a8; border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; }
+  .pl-timer-display { font-size: 22px; font-weight: 700; color: #a15c00; min-width: 78px; }
+  .pl-timer-controls { display: flex; gap: 6px; flex-wrap: wrap; }
+  .pl-timer-controls button { font-size: 12px; padding: 6px 10px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; }
+  .pl-timer-start { background: #2E8B57; color: #fff; }
+  .pl-timer-pause { background: #EF6C00; color: #fff; }
+  .pl-timer-save { background: #CC0000; color: #fff; }
+  .pl-timer-reset { background: #f2f2f2; color: #555; }
+  .pl-timer-disc { padding: 6px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; min-width: 130px; }
+  .pl-timer-hint { font-size: 10.5px; color: #a15c00; flex-basis: 100%; }
 
   .pl-legend {
     display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; margin-bottom: 10px;
@@ -289,6 +326,7 @@
   <div class="pl-tabbar" id="pl-tabbar">
     <button class="pl-tab active" data-tab="calendario">Calend&aacute;rio</button>
     <button class="pl-tab" data-tab="tarefas">Tarefas</button>
+    <button class="pl-tab" data-tab="disciplinas">Disciplinas</button>
     <button class="pl-tab" data-tab="resumo">Resumo</button>
   </div>
 
@@ -371,10 +409,17 @@
           <label>Disciplina (opcional)</label>
           <input type="text" id="pl-todo-disciplina" placeholder="ex: Cariologie..." maxlength="60">
         </div>
-        <div class="pl-adv-checkrow">
-          <input type="checkbox" id="pl-todo-repeat-check">
-          <label for="pl-todo-repeat-check">Repetir toda a semana (lembrete de revis&atilde;o) at&eacute;:</label>
-          <input type="date" id="pl-todo-repeat-until" disabled>
+        <div>
+          <label>Repeti&ccedil;&atilde;o / revis&atilde;o</label>
+          <select id="pl-todo-repeat-mode">
+            <option value="none">N&atilde;o repetir</option>
+            <option value="weekly">Toda a semana at&eacute; uma data</option>
+            <option value="spaced">Revis&atilde;o espa&ccedil;ada (2, 5, 10 dias)</option>
+          </select>
+        </div>
+        <div class="pl-adv-checkrow" id="pl-repeat-until-wrap" style="display:none">
+          <label for="pl-todo-repeat-until">At&eacute;:</label>
+          <input type="date" id="pl-todo-repeat-until">
         </div>
       </div>
       <input type="hidden" id="pl-todo-linked-event" value="">
@@ -384,9 +429,34 @@
     </div>
   </div>
 
+  <div class="pl-tabpage" id="pl-tabpage-disciplinas">
+    <div class="pl-disc-addwrap">
+      <input type="text" id="pl-disc-add-input" placeholder="adicionar disciplina (se n&atilde;o estiver na lista)..." maxlength="60">
+      <button id="pl-disc-add-btn">Adicionar</button>
+    </div>
+    <div class="pl-disc-picker" id="pl-disc-picker"></div>
+    <div id="pl-disc-content"></div>
+  </div>
+
   <div class="pl-tabpage" id="pl-tabpage-resumo">
     <div class="pl-upcoming" id="pl-upcoming"></div>
     <div class="pl-goal" id="pl-goal"></div>
+
+    <div class="pl-timer" id="pl-timer">
+      <div class="pl-timer-display" id="pl-timer-display">00:00</div>
+      <select class="pl-timer-disc" id="pl-timer-disc">
+        <option value="">(sem disciplina espec&iacute;fica)</option>
+      </select>
+      <div class="pl-timer-controls">
+        <button class="pl-timer-start" id="pl-timer-start">Iniciar</button>
+        <button class="pl-timer-pause" id="pl-timer-pause" style="display:none">Pausar</button>
+        <button class="pl-timer-start" id="pl-timer-resume" style="display:none">Continuar</button>
+        <button class="pl-timer-save" id="pl-timer-save" style="display:none">Terminar e guardar</button>
+        <button class="pl-timer-reset" id="pl-timer-reset" style="display:none">Cancelar</button>
+      </div>
+      <div class="pl-timer-hint">Cron&oacute;metro de estudo &mdash; sugest&atilde;o: sess&otilde;es de 25 min (Pomodoro). Ao guardar, cria um bloco de Estudo hoje e conta para a tua meta semanal.</div>
+    </div>
+
     <div class="pl-todos" id="pl-monthly-inline-wrap">
       <div class="pl-todos-header"><div class="pl-todos-title">Resumo mensal</div></div>
       <div id="pl-monthly-inline"></div>
@@ -580,6 +650,31 @@
       if (!todos[i].done && todos[i].linkedEventId === eventId) return true;
     }
     return false;
+  }
+
+  // ---------- disciplinas: notas, links, disciplinas manuais ----------
+  var disciplineNotes = {};
+  var disciplineLinks = {};
+  var manualDisciplines = [];
+  var selectedDiscipline = null;
+  var discNotesSaveTimer = null;
+  function saveDisciplineNotes() {
+    if (docRef) docRef.set({ disciplineNotes: disciplineNotes }, { merge: true }).catch(function (e) { console.error("Erro ao guardar notas:", e); });
+  }
+  function saveDisciplineLinks() {
+    if (docRef) docRef.set({ disciplineLinks: disciplineLinks }, { merge: true }).catch(function (e) { console.error("Erro ao guardar links:", e); });
+  }
+  function saveManualDisciplines() {
+    if (docRef) docRef.set({ manualDisciplines: manualDisciplines }, { merge: true }).catch(function (e) { console.error("Erro ao guardar disciplinas:", e); });
+  }
+  function getAllDisciplines() {
+    var set = {};
+    CLASS_EVENTS.forEach(function (e) { if (e.curso) set[e.curso] = true; });
+    todos.forEach(function (t) { if (t.disciplina) set[t.disciplina] = true; });
+    manualDisciplines.forEach(function (d) { set[d] = true; });
+    Object.keys(disciplineNotes).forEach(function (d) { if (disciplineNotes[d]) set[d] = true; });
+    Object.keys(disciplineLinks).forEach(function (d) { if (disciplineLinks[d] && disciplineLinks[d].length) set[d] = true; });
+    return Object.keys(set).sort();
   }
 
   function moveCustomBlock(oldIso, id, newIso, newStart, newEnd) {
@@ -1030,26 +1125,38 @@
     var priority = document.getElementById("pl-todo-priority").value;
     var due = document.getElementById("pl-todo-due").value;
     var disciplina = document.getElementById("pl-todo-disciplina").value.trim().slice(0, 60);
-    var repeatOn = document.getElementById("pl-todo-repeat-check").checked;
+    var repeatMode = document.getElementById("pl-todo-repeat-mode").value;
     var repeatUntil = document.getElementById("pl-todo-repeat-until").value;
     var linkedEventId = document.getElementById("pl-todo-linked-event").value || null;
 
-    function makeTodo(dueDate) {
+    function defaultSubtasks() {
+      if (!linkedEventId) return [];
+      var linkedEv = eventById[linkedEventId];
+      if (!linkedEv || linkedEv.cat !== "toets") return [];
+      var suf = Date.now() + "_" + Math.random().toString(16).slice(2) + "_";
+      return [
+        { id: "s" + suf + "a", text: "Rever apontamentos", done: false },
+        { id: "s" + suf + "b", text: "Fazer resumo", done: false },
+        { id: "s" + suf + "c", text: "Rever perguntas antigas", done: false }
+      ];
+    }
+
+    function makeTodo(dueDate, itemText) {
       return {
         id: "t" + Date.now() + Math.random().toString(16).slice(2) + Math.random().toString(16).slice(2),
-        text: text.slice(0, 120),
+        text: (itemText || text).slice(0, 120),
         done: false,
         type: type,
         priority: priority,
         due: dueDate || "",
         disciplina: disciplina,
         linkedEventId: linkedEventId,
-        subtasks: [],
+        subtasks: defaultSubtasks(),
         notes: ""
       };
     }
 
-    if (repeatOn && repeatUntil && due) {
+    if (repeatMode === "weekly" && repeatUntil && due) {
       var d = parseISO(due);
       var end = parseISO(repeatUntil);
       var guard = 0;
@@ -1058,6 +1165,12 @@
         d = addDays(d, 7);
         guard++;
       }
+    } else if (repeatMode === "spaced") {
+      var anchor = due ? parseISO(due) : new Date();
+      [0, 2, 5, 10].forEach(function (off, idx) {
+        var d2 = addDays(anchor, off);
+        todos.push(makeTodo(toISO(d2), idx > 0 ? ("Rever: " + text.slice(0, 110)) : text));
+      });
     } else {
       todos.push(makeTodo(due));
     }
@@ -1068,8 +1181,8 @@
     document.getElementById("pl-todo-priority").value = "media";
     document.getElementById("pl-todo-disciplina").value = "";
     document.getElementById("pl-todo-due").value = "";
-    document.getElementById("pl-todo-repeat-check").checked = false;
-    document.getElementById("pl-todo-repeat-until").disabled = true;
+    document.getElementById("pl-todo-repeat-mode").value = "none";
+    document.getElementById("pl-repeat-until-wrap").style.display = "none";
     document.getElementById("pl-todo-repeat-until").value = "";
     document.getElementById("pl-todo-linked-event").value = "";
     renderTodos();
@@ -1667,8 +1780,8 @@
   document.getElementById("pl-todos-adv-toggle").addEventListener("click", function () {
     document.getElementById("pl-todos-adv").classList.toggle("show");
   });
-  document.getElementById("pl-todo-repeat-check").addEventListener("change", function (e) {
-    document.getElementById("pl-todo-repeat-until").disabled = !e.target.checked;
+  document.getElementById("pl-todo-repeat-mode").addEventListener("change", function (e) {
+    document.getElementById("pl-repeat-until-wrap").style.display = e.target.value === "weekly" ? "flex" : "none";
   });
 
   // ---------- resumo mensal ----------
@@ -1731,7 +1844,271 @@
     }
   }
 
-  // ---------- abas (Calendario / Tarefas / Resumo) ----------
+  // ---------- disciplinas: dashboard, notas, links ----------
+  function disciplineMonthlyHours(disc) {
+    var now = new Date();
+    var monthKey = now.getFullYear() + "-" + pad2(now.getMonth() + 1);
+    var mins = 0;
+    Object.keys(eventsByDate).forEach(function (iso) {
+      if (iso.slice(0, 7) !== monthKey) return;
+      dayEffectiveEvents(iso).forEach(function (ev) {
+        if (ev.curso === disc) mins += (timeToMin(ev.end) - timeToMin(ev.start));
+      });
+    });
+    return mins;
+  }
+
+  function disciplineNextEval(disc) {
+    var todayIsoNow = toISO(new Date());
+    var found = null;
+    Object.keys(eventsByDate).sort().forEach(function (iso) {
+      if (found || iso < todayIsoNow) return;
+      dayEffectiveEvents(iso).forEach(function (ev) {
+        if (!found && ev.curso === disc && (ev.cat === "toets" || ev.cat === "prazo")) {
+          found = { iso: iso, title: ev.title };
+        }
+      });
+    });
+    return found;
+  }
+
+  function disciplinePendingCount(disc) {
+    return todos.filter(function (t) { return !t.done && t.disciplina === disc; }).length;
+  }
+
+  function renderDisciplinePicker() {
+    var el = document.getElementById("pl-disc-picker");
+    var all = getAllDisciplines();
+    if (!all.length) {
+      el.innerHTML = "<div class='pl-disc-empty'>Ainda n\u00e3o h\u00e1 disciplinas. Adiciona uma acima, ou aparecem automaticamente das tuas aulas e tarefas.</div>";
+    } else {
+      el.innerHTML = all.map(function (d) {
+        return "<button class='pl-disc-chip" + (selectedDiscipline === d ? " active" : "") + "' data-disc='" + d + "'>" + d + "</button>";
+      }).join("");
+      Array.prototype.forEach.call(el.querySelectorAll("[data-disc]"), function (b) {
+        b.addEventListener("click", function () {
+          selectedDiscipline = b.getAttribute("data-disc");
+          renderDisciplinePicker();
+          renderDisciplineContent();
+        });
+      });
+    }
+    if (selectedDiscipline && all.indexOf(selectedDiscipline) === -1) selectedDiscipline = null;
+    renderDisciplineContent();
+  }
+
+  function renderDisciplineContent() {
+    var el = document.getElementById("pl-disc-content");
+    if (!selectedDiscipline) {
+      el.innerHTML = "<div class='pl-disc-empty'>Escolhe ou adiciona uma disciplina acima para veres notas, links e um resumo r\u00e1pido.</div>";
+      return;
+    }
+    var disc = selectedDiscipline;
+    var hours = disciplineMonthlyHours(disc);
+    var pending = disciplinePendingCount(disc);
+    var nextEval = disciplineNextEval(disc);
+
+    var html = "<div class='pl-disc-dash'>" +
+      "<div class='pl-disc-card'><div class='n'>" + fmtHours(hours) + "</div><div class='l'>Aulas este m\u00eas</div></div>" +
+      "<div class='pl-disc-card clickable' id='pl-disc-pending-card'><div class='n'>" + pending + "</div><div class='l'>Tarefas pendentes</div></div>" +
+      "<div class='pl-disc-card" + (nextEval ? " clickable" : "") + "' id='pl-disc-eval-card'><div class='n'>" + (nextEval ? fmtDateLabel(parseISO(nextEval.iso)) : "\u2014") + "</div><div class='l'>" + (nextEval ? nextEval.title : "Sem avalia\u00e7\u00e3o agendada") + "</div></div>" +
+      "</div>" +
+      "<div class='pl-disc-section-title'>Notas</div>" +
+      "<textarea class='pl-disc-notes' id='pl-disc-notes' placeholder='Resumos, f\u00f3rmulas, pontos a n\u00e3o esquecer...'>" + (disciplineNotes[disc] || "") + "</textarea>" +
+      "<div class='pl-disc-notes-status' id='pl-disc-notes-status'>&nbsp;</div>" +
+      "<div class='pl-disc-section-title'>Links</div>" +
+      "<div class='pl-disc-links' id='pl-disc-links'></div>" +
+      "<div class='pl-disc-link-add'>" +
+      "<input type='text' id='pl-disc-link-label' placeholder='nome (opcional)' maxlength='60'>" +
+      "<input type='text' id='pl-disc-link-url' placeholder='https://...' maxlength='300'>" +
+      "<button id='pl-disc-link-add-btn'>+ Link</button>" +
+      "</div>";
+    el.innerHTML = html;
+
+    var pendingCard = document.getElementById("pl-disc-pending-card");
+    if (pendingCard) {
+      pendingCard.addEventListener("click", function () {
+        todoFilterDisc = disc;
+        todoFilterStatus = "pending";
+        switchTab("tarefas");
+        renderTodos();
+      });
+    }
+    if (nextEval) {
+      var evalCard = document.getElementById("pl-disc-eval-card");
+      evalCard.addEventListener("click", function () {
+        singleDayIso = nextEval.iso;
+        switchTab("calendario");
+        renderWeek();
+      });
+    }
+
+    var notesEl = document.getElementById("pl-disc-notes");
+    var notesStatus = document.getElementById("pl-disc-notes-status");
+    notesEl.addEventListener("input", function () {
+      notesStatus.textContent = "A escrever...";
+      if (discNotesSaveTimer) clearTimeout(discNotesSaveTimer);
+      discNotesSaveTimer = setTimeout(function () {
+        disciplineNotes[disc] = notesEl.value.slice(0, 8000);
+        saveDisciplineNotes();
+        notesStatus.textContent = "Guardado.";
+      }, 600);
+    });
+
+    renderDisciplineLinks(disc);
+    document.getElementById("pl-disc-link-add-btn").addEventListener("click", function () {
+      var labelInput = document.getElementById("pl-disc-link-label");
+      var urlInput = document.getElementById("pl-disc-link-url");
+      var url = urlInput.value.trim();
+      if (!url) return;
+      if (!/^https?:\/\//i.test(url)) url = "https://" + url;
+      var label = labelInput.value.trim().slice(0, 60) || url;
+      if (!disciplineLinks[disc]) disciplineLinks[disc] = [];
+      disciplineLinks[disc].push({ id: "l" + Date.now() + Math.random().toString(16).slice(2), label: label.slice(0, 60), url: url.slice(0, 300) });
+      saveDisciplineLinks();
+      labelInput.value = "";
+      urlInput.value = "";
+      renderDisciplineLinks(disc);
+    });
+  }
+
+  function renderDisciplineLinks(disc) {
+    var el = document.getElementById("pl-disc-links");
+    var links = disciplineLinks[disc] || [];
+    if (!links.length) {
+      el.innerHTML = "<div class='pl-disc-empty'>Sem links guardados.</div>";
+      return;
+    }
+    el.innerHTML = "";
+    links.forEach(function (lnk) {
+      var row = document.createElement("div");
+      row.className = "pl-disc-link-row";
+      var a = document.createElement("a");
+      a.href = lnk.url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.textContent = lnk.label || lnk.url;
+      var del = document.createElement("button");
+      del.className = "pl-todo-del";
+      del.textContent = "\u2715";
+      del.title = "Remover";
+      del.addEventListener("click", function () {
+        disciplineLinks[disc] = (disciplineLinks[disc] || []).filter(function (x) { return x.id !== lnk.id; });
+        saveDisciplineLinks();
+        renderDisciplineLinks(disc);
+      });
+      row.appendChild(a);
+      row.appendChild(del);
+      el.appendChild(row);
+    });
+  }
+
+  document.getElementById("pl-disc-add-btn").addEventListener("click", function () {
+    var input = document.getElementById("pl-disc-add-input");
+    var v = input.value.trim().slice(0, 60);
+    if (!v) return;
+    if (manualDisciplines.indexOf(v) === -1) {
+      manualDisciplines.push(v);
+      saveManualDisciplines();
+    }
+    input.value = "";
+    selectedDiscipline = v;
+    renderDisciplinePicker();
+  });
+  document.getElementById("pl-disc-add-input").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") document.getElementById("pl-disc-add-btn").click();
+  });
+
+  // ---------- cronometro de estudo ----------
+  var timerState = "idle"; // idle | running | paused
+  var timerStartTs = null;
+  var timerAccumMs = 0;
+  var timerInterval = null;
+
+  function fmtTimer(ms) {
+    var totalSec = Math.floor(ms / 1000);
+    var m = Math.floor(totalSec / 60), s = totalSec % 60;
+    return pad2(m) + ":" + pad2(s);
+  }
+  function timerTick() {
+    var elapsed = timerAccumMs + (timerStartTs ? (Date.now() - timerStartTs) : 0);
+    document.getElementById("pl-timer-display").textContent = fmtTimer(elapsed);
+  }
+  function updateTimerButtons() {
+    document.getElementById("pl-timer-start").style.display = timerState === "idle" ? "inline-block" : "none";
+    document.getElementById("pl-timer-pause").style.display = timerState === "running" ? "inline-block" : "none";
+    document.getElementById("pl-timer-resume").style.display = timerState === "paused" ? "inline-block" : "none";
+    document.getElementById("pl-timer-save").style.display = timerState !== "idle" ? "inline-block" : "none";
+    document.getElementById("pl-timer-reset").style.display = timerState !== "idle" ? "inline-block" : "none";
+  }
+  function timerStart() {
+    timerState = "running";
+    timerAccumMs = 0;
+    timerStartTs = Date.now();
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(timerTick, 1000);
+    updateTimerButtons();
+  }
+  function timerPause() {
+    timerAccumMs += Date.now() - timerStartTs;
+    timerStartTs = null;
+    timerState = "paused";
+    clearInterval(timerInterval);
+    updateTimerButtons();
+  }
+  function timerResume() {
+    timerState = "running";
+    timerStartTs = Date.now();
+    timerInterval = setInterval(timerTick, 1000);
+    updateTimerButtons();
+  }
+  function timerReset() {
+    clearInterval(timerInterval);
+    timerState = "idle";
+    timerStartTs = null;
+    timerAccumMs = 0;
+    document.getElementById("pl-timer-display").textContent = "00:00";
+    updateTimerButtons();
+  }
+  function timerSave() {
+    var elapsedMs = timerAccumMs + (timerStartTs ? (Date.now() - timerStartTs) : 0);
+    clearInterval(timerInterval);
+    var minutes = Math.round(elapsedMs / 60000);
+    if (minutes < 1) { timerReset(); return; }
+    var now = new Date();
+    var endIso = toISO(now);
+    var endMin = now.getHours() * 60 + now.getMinutes();
+    var startMin = Math.max(0, endMin - minutes);
+    var disc = document.getElementById("pl-timer-disc").value;
+    if (!customBlocks[endIso]) customBlocks[endIso] = [];
+    customBlocks[endIso].push({
+      id: "b" + Date.now() + "_timer_" + Math.random().toString(16).slice(2),
+      type: "estudo",
+      note: disc ? ("Sess\u00e3o de estudo \u00b7 " + disc) : "Sess\u00e3o de estudo (cron\u00f3metro)",
+      start: minToTime(startMin), end: minToTime(endMin)
+    });
+    saveStore(STORE_KEY, customBlocks);
+    timerReset();
+    renderWeek();
+  }
+  document.getElementById("pl-timer-start").addEventListener("click", timerStart);
+  document.getElementById("pl-timer-pause").addEventListener("click", timerPause);
+  document.getElementById("pl-timer-resume").addEventListener("click", timerResume);
+  document.getElementById("pl-timer-save").addEventListener("click", timerSave);
+  document.getElementById("pl-timer-reset").addEventListener("click", function () {
+    if (timerAccumMs < 30000 || window.confirm("Cancelar esta sess\u00e3o sem guardar?")) timerReset();
+  });
+
+  function renderTimerDisciplineOptions() {
+    var sel = document.getElementById("pl-timer-disc");
+    var current = sel.value;
+    var all = getAllDisciplines();
+    sel.innerHTML = "<option value=''>(sem disciplina espec\u00edfica)</option>" +
+      all.map(function (d) { return "<option value='" + d + "'>" + d + "</option>"; }).join("");
+    if (all.indexOf(current) !== -1) sel.value = current;
+  }
+
+  // ---------- abas (Calendario / Tarefas / Disciplinas / Resumo) ----------
   function switchTab(name) {
     Array.prototype.forEach.call(document.querySelectorAll(".pl-tab"), function (b) {
       b.classList.toggle("active", b.getAttribute("data-tab") === name);
@@ -1739,7 +2116,8 @@
     Array.prototype.forEach.call(document.querySelectorAll(".pl-tabpage"), function (p) {
       p.classList.toggle("active", p.id === "pl-tabpage-" + name);
     });
-    if (name === "resumo") renderMonthlyInline();
+    if (name === "resumo") { renderMonthlyInline(); renderTimerDisciplineOptions(); }
+    if (name === "disciplinas") renderDisciplinePicker();
   }
   Array.prototype.forEach.call(document.querySelectorAll(".pl-tab"), function (b) {
     b.addEventListener("click", function () { switchTab(b.getAttribute("data-tab")); });
@@ -1784,6 +2162,9 @@
     commuteOverrides = data.commuteOverrides || {};
     studyGoalMin = (typeof data.studyGoalMin === "number") ? data.studyGoalMin : 360;
     todos = data.todos || [];
+    disciplineNotes = data.disciplineNotes || {};
+    disciplineLinks = data.disciplineLinks || {};
+    manualDisciplines = data.manualDisciplines || [];
     syncStatusEl.textContent = "Sincronizado";
     startAppIfNeeded();
     renderTodos();
